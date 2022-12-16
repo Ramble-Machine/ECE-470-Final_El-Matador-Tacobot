@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<robot name="block">
+
+<link name="base_link">
+
+  <collision>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <box size="0.0318 0.0318 0.0318" />
+    </geometry>
+  </collision>
+
+  <visual>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <box size="0.0318 0.0318 0.0318" />
+    </geometry>
+  </visual>
+
+  <inertial>
+   <origin xyz="0 0 0" rpy="0 0 0"/>
+   <mass value="0.0225" />
+   <inertia
+      ixx="0.00000379215" ixy="0.0"  ixz="0.0"
+      iyy="0.00000379215" iyz="0.0"  izz="0.00000379215" />
+  </inertial>
+
+</link>
+
+<gazebo reference="base_link">
+  <mu1>100</mu1>
+  <mu2>100</mu2>
+  <kp>2147483647</kp>
+  <kd>1</kd>
+  <maxVel>0</maxVel>
+  <minDepth>0.001</minDepth>
+</gazebo>
+
+</robot>

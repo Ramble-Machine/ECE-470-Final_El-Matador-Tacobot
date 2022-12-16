@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <arg name="limited" default="false" doc="If true, limits joint range [-PI, PI] on all joints." />
+  <arg name="paused" default="true" doc="Starts gazebo in paused mode" />
+  <arg name="gui" default="true" doc="Starts gazebo gui" />
+
+  <!-- startup simulated world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" default="worlds/empty.world"/>
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="gui" value="$(arg gui)"/>
+  </include>
+
+  <!-- send robot urdf to param server -->
+  <include file="$(find ur_description)/launch/ur3_upload.launch">
+    <arg name="limited" value="$(arg limited)"/>
+  </include>
+  <node name="spawn_tablebase" pkg="gazebo_ros" type="spawn_model" args="-urdf -file /home/ur3/Downloads/tacostuff/tablebase.urdf -urdf -model table -x -0 -y 0 -z 0" respawn="false" output="screen" />
+  <node name="spawn_tabletop" pkg="gazebo_ros" type="spawn_model" args="-urdf -file /home/ur3/Downloads/tacostuff/tabletop.urdf -urdf -model tabletop -x -0 -y 0 -z 0.9" respawn="false" output="screen" />
+  <!-- push robot_description to factory and spawn robot in gazebo -->
+  <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model robot -x -0.15 -y 0.15 -z 1.010" respawn="false" output="screen" />
+
+  <include file="$(find ur_gazebo)/launch/controller_utils.launch"/>
+
+  <!-- start this controller -->
+  <rosparam file="$(find ur_gazebo)/controller/arm_controller_ur3.yaml" command="load"/>	
+  <node name="arm_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn arm_controller" respawn="false" output="screen"/>
+
+  <!-- load other controllers -->
+  <node name="ros_control_controller_manager" pkg="controller_manager" type="controller_manager" respawn="false" output="screen" args="load joint_group_position_controller" />
+
+  <!-- <node name="spawn_block" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_description)/urdf/block.urdf -urdf -model block" /> -->
+
+  <node name="spawn_camera" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_description)/urdf/camera.urdf -urdf -model camera -x 0 -y 0 -z 3" />
+
+	<node name="ur3_gazebo_driver_1" pkg="ur3_driver" type="ur3_gazebo_driver.py" output="screen">
+	</node>
+  <node name="spawn_bluebin" pkg="gazebo_ros" type="spawn_model" args="-urdf -file /home/ur3/Downloads/tacostuff/bluebin.urdf -model bluebin -x 0.2 -y 0.311 -z 1.012" respawn="false" output="screen"/>
+  <node name="spawn_redbin" pkg="gazebo_ros" type="spawn_model" args="-urdf -file /home/ur3/Downloads/tacostuff/redbin.urdf -model redbin -x 0.23 -y 0.069 -z 1.012" respawn="false" output="screen"/>
+  <node name="spawn_greenbin" pkg="gazebo_ros" type="spawn_model" args="-urdf -file /home/ur3/Downloads/tacostuff/greenbin.urdf -model greenbin -x 0.18 -y -0.22 -z 1.012" respawn="false" output="screen"/>
+
+</launch>
+ 
